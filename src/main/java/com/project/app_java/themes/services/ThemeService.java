@@ -72,5 +72,6 @@ public class ThemeService {
         if(!isHexValid) {
             return Optional.of("Invalid hex color");
         }
+        return Optional.empty();
     }
 }

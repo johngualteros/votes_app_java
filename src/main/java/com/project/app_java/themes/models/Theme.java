@@ -19,7 +19,7 @@ public class Theme {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long   id;
 
-    @Column(nullable = false)
+    @Column
     private String uuid = Generators.generateUUID();
 
     @Column(nullable = false)

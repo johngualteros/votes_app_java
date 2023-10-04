@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ThemeRepository extends JpaRepository<Theme, Long> {
-    @Query("SELECT t FROM Theme t WHERE t.name = ?1")
+    @Query(value = "SELECT * FROM theme WHERE name = ?1 LIMIT 1", nativeQuery = true)
     Theme findByName(String name);
-    @Query("SELECT t FROM Theme t WHERE t.uuid = ?1")
+    @Query(value = "SELECT * FROM theme WHERE uuid = ?1 LIMIT 1", nativeQuery = true)
     Theme findByUUID(String uuid);
 }

@@ -1,9 +1,8 @@
 services:
   postgres:
-    image: 'postgres:12-alpine'
+    image: 'postgres:15-alpine'
     environment:
-      - 'POSTGRES_DB=votes'
-      - 'POSTGRES_PASSWORD=tU;z*axM|6`<kp!DFN@[tX}%wI=_rP$Bko,%NxrW7oMM{0vi&og7]zmzjm9F]41'
-      - 'POSTGRES_USER=votes'
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=JOFKwBRizhh1HoIS6StlPFBU0NmD
     ports:
-      - '5432'
+      - '5432:5432'
