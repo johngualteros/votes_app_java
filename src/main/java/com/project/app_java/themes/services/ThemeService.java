@@ -1,5 +1,7 @@
 package com.project.app_java.themes.services;
 
+import com.project.app_java.shared.exceptions.AlreadyExistsHttpException;
+import com.project.app_java.shared.exceptions.BadRequestHttpException;
 import com.project.app_java.shared.utils.Convertors;
 import com.project.app_java.shared.utils.Validators;
 import com.project.app_java.themes.models.Theme;
@@ -21,16 +23,10 @@ public class ThemeService {
      * @param theme
      * @return String
      */
-    public String createTheme(Theme theme) {
-        Optional<String> isHexValid = validateIfIsHexColor(theme.getColor());
-        if(isHexValid.isPresent()) {
-            return isHexValid.get();
-        }
+    public String createTheme(Theme theme) throws BadRequestHttpException, AlreadyExistsHttpException {
         String themeNameCamelCase = Convertors.convertToCamelCase(theme.getName());
-        Theme themeFound = themeRepository.findByName(themeNameCamelCase);
-        if(themeFound != null) {
-            return "Theme already exists";
-        }
+        validateIfIsHexColor(theme.getColor());
+        this.validateIfExistsThemeByNameOrFail(themeNameCamelCase);
         theme.setName(themeNameCamelCase);
         themeRepository.save(theme);
         return "Theme created successfully";
@@ -42,7 +38,7 @@ public class ThemeService {
      * @param theme
      * @return String
      * */
-    public String updateTheme(String uuid, Theme theme) {
+    /*public String updateTheme(String uuid, Theme theme) {
         Theme themeFound = themeRepository.findByUUID(uuid);
         if(themeFound == null) {
             return "Theme not found";
@@ -60,6 +56,18 @@ public class ThemeService {
         themeFound.setColor(theme.getColor());
         themeRepository.save(themeFound);
         return "Theme updated successfully";
+    }*/
+
+    /**
+     * method for validate if exists theme by name or fail
+     * @param name
+     * @return void
+     * */
+    protected void validateIfExistsThemeByNameOrFail(String name) throws AlreadyExistsHttpException {
+        Theme theme = themeRepository.findByName(name);
+        if(theme != null) {
+            throw new AlreadyExistsHttpException("Theme already exists");
+        }
     }
 
     /**
@@ -67,11 +75,10 @@ public class ThemeService {
      * @param color
      * @return Optional<String>
      */
-    public Optional<String> validateIfIsHexColor(String color) {
+    public void validateIfIsHexColor(String color) throws BadRequestHttpException {
         boolean isHexValid = Validators.isHexColor(color);
         if(!isHexValid) {
-            return Optional.of("Invalid hex color");
+            throw new BadRequestHttpException("Color is not a valid hex color");
         }
-        return Optional.empty();
     }
 }
