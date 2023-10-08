@@ -35,6 +35,22 @@ public class ThemeController {
         }
     }
 
+    @PutMapping("/{uuid}")
+    public ResponseEntity<?> updateTheme(@PathVariable String uuid, @RequestBody Theme theme) throws BadRequestHttpException, AlreadyExistsHttpException, NotFoundHttpException, InternalServerHttpException {
+        try {
+            themeService.updateTheme(uuid, theme);
+            return ResponseEntity.ok().body(ResponseEntity.status(202).body(theme));
+        } catch (BadRequestHttpException e) {
+            throw new BadRequestHttpException(e.getMessage());
+        } catch (AlreadyExistsHttpException e) {
+            throw new AlreadyExistsHttpException(e.getMessage());
+        } catch (NotFoundHttpException e) {
+            throw new NotFoundHttpException(e.getMessage());
+        } catch (Exception e) {
+            throw new InternalServerHttpException(e.getMessage());
+        }
+    }
+
     @GetMapping
     public ResponseEntity<List<Theme>> getAllWithoutPaginate() {
         return ResponseEntity.ok().body(themeService.getAllThemesWithoutPaginate());
@@ -44,6 +60,19 @@ public class ThemeController {
     public ResponseEntity<Theme> getThemeByUuid(@PathVariable String uuid) throws NotFoundHttpException, InternalServerHttpException {
         try {
             return ResponseEntity.ok().body(ResponseEntity.status(200).body(themeService.getThemeByUuid(uuid)).getBody());
+        } catch (NotFoundHttpException e) {
+            throw new NotFoundHttpException(e.getMessage());
+        } catch (Exception e) {
+            throw new InternalServerHttpException(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<?> deleteThemeByUuid(@PathVariable String uuid) throws NotFoundHttpException, InternalServerHttpException {
+        try {
+            themeService.deleteThemeByUuid(uuid);
+            return ResponseEntity.ok().body(ResponseEntity.status(202).body("Theme deleted successfully"));
+
         } catch (NotFoundHttpException e) {
             throw new NotFoundHttpException(e.getMessage());
         } catch (Exception e) {

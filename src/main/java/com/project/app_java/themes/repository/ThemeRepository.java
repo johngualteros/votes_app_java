@@ -2,6 +2,7 @@ package com.project.app_java.themes.repository;
 
 import com.project.app_java.themes.models.Theme;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 

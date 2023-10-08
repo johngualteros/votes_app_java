@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Service
 public class ThemeService {
-    //TODO: make the responses or es or en depending on the language of the user first using the theme
+    //TODO: make the responses or es or en depending on the language of the user first using the theme and pagination
 
     // repository
     private ThemeRepository themeRepository;
@@ -39,6 +39,20 @@ public class ThemeService {
     }
 
     /**
+     * method to update a theme
+     * @param theme
+     * @return Theme
+     */
+    public Theme updateTheme(String uuid, Theme theme) throws BadRequestHttpException, AlreadyExistsHttpException, NotFoundHttpException {
+        String themeNameCamelCase = Convertors.convertToCamelCase(theme.getName());
+        validators.validateIfIsHexColor(theme.getColor());
+        Theme foundedTheme = validators.getThemeByUuidOrFail(uuid);
+        foundedTheme.setName(themeNameCamelCase);
+        foundedTheme.setColor(theme.getColor());
+        return themeRepository.save(theme);
+    }
+
+    /**
      * method for get all themes
      * @return List<Theme>
      * */
@@ -58,4 +72,19 @@ public class ThemeService {
         }
         throw new NotFoundHttpException("Theme");
     }
+
+    /**
+     * method for delete theme by uuid
+     * @param uuid
+     * */
+    public void deleteThemeByUuid(String uuid) throws NotFoundHttpException {
+        Optional<Theme> theme = themeRepository.findByUUID(uuid);
+        if(theme.isEmpty()) throw new NotFoundHttpException("Theme");
+        themeRepository.delete(theme.get());
+    }
 }
+
+
+
+
+

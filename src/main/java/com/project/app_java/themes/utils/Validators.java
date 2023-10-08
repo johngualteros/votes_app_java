@@ -2,6 +2,7 @@ package com.project.app_java.themes.utils;
 
 import com.project.app_java.shared.exceptions.AlreadyExistsHttpException;
 import com.project.app_java.shared.exceptions.BadRequestHttpException;
+import com.project.app_java.shared.exceptions.NotFoundHttpException;
 import com.project.app_java.themes.models.Theme;
 import com.project.app_java.themes.repository.ThemeRepository;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,19 @@ public class Validators {
         if(theme != null) {
             throw new AlreadyExistsHttpException("Theme already exists");
         }
+    }
+
+    /**
+     * method for get the theme by uuid or fail
+     * @param uuid
+     * @return Theme
+     * */
+    public Theme getThemeByUuidOrFail(String uuid) throws NotFoundHttpException {
+        Theme theme = themeRepository.findByUUID(uuid).orElse(null);
+        if(theme == null) {
+            throw new NotFoundHttpException("Theme already exists");
+        }
+        return theme;
     }
 
     /**
