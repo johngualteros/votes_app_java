@@ -2,83 +2,60 @@ package com.project.app_java.themes.services;
 
 import com.project.app_java.shared.exceptions.AlreadyExistsHttpException;
 import com.project.app_java.shared.exceptions.BadRequestHttpException;
+import com.project.app_java.shared.exceptions.NotFoundHttpException;
 import com.project.app_java.shared.utils.Convertors;
-import com.project.app_java.shared.utils.Validators;
 import com.project.app_java.themes.models.Theme;
 import com.project.app_java.themes.repository.ThemeRepository;
+import com.project.app_java.themes.utils.Validators;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ThemeService {
+    //TODO: make the responses or es or en depending on the language of the user first using the theme
+
     // repository
     private ThemeRepository themeRepository;
+    // validators
+    private Validators validators;
     // constructor
-    public ThemeService(ThemeRepository themeRepository) {
+    public ThemeService(ThemeRepository themeRepository, Validators validators) {
         this.themeRepository = themeRepository;
+        this.validators = validators;
     }
     /**
      * method to create a theme
      * @param theme
      * @return String
      */
-    public String createTheme(Theme theme) throws BadRequestHttpException, AlreadyExistsHttpException {
+    public void createTheme(Theme theme) throws BadRequestHttpException, AlreadyExistsHttpException {
         String themeNameCamelCase = Convertors.convertToCamelCase(theme.getName());
-        validateIfIsHexColor(theme.getColor());
-        this.validateIfExistsThemeByNameOrFail(themeNameCamelCase);
+        validators.validateIfIsHexColor(theme.getColor());
+        validators.validateIfExistsThemeByNameOrFail(themeNameCamelCase);
         theme.setName(themeNameCamelCase);
         themeRepository.save(theme);
-        return "Theme created successfully";
     }
 
     /**
-     * method to update a theme
+     * method for get all themes
+     * @return List<Theme>
+     * */
+    public List<Theme> getAllThemesWithoutPaginate() {
+        return themeRepository.findAll();
+    }
+
+    /**
+     * method for get theme by uuid
      * @param uuid
-     * @param theme
-     * @return String
+     * @return Theme
      * */
-    /*public String updateTheme(String uuid, Theme theme) {
-        Theme themeFound = themeRepository.findByUUID(uuid);
-        if(themeFound == null) {
-            return "Theme not found";
+    public Theme getThemeByUuid(String uuid) throws NotFoundHttpException {
+        Optional<Theme> theme = themeRepository.findByUUID(uuid);
+        if (theme.isPresent()) {
+            return theme.get();
         }
-        Optional<String> isHexValid = validateIfIsHexColor(theme.getColor());
-        if(isHexValid.isPresent()) {
-            return isHexValid.get();
-        }
-        String themeNameCamelCase = Convertors.convertToCamelCase(theme.getName());
-        Theme themeFoundByName = themeRepository.findByName(themeNameCamelCase);
-        if(themeFoundByName != null) {
-            return "Theme already exists";
-        }
-        themeFound.setName(themeNameCamelCase);
-        themeFound.setColor(theme.getColor());
-        themeRepository.save(themeFound);
-        return "Theme updated successfully";
-    }*/
-
-    /**
-     * method for validate if exists theme by name or fail
-     * @param name
-     * @return void
-     * */
-    protected void validateIfExistsThemeByNameOrFail(String name) throws AlreadyExistsHttpException {
-        Theme theme = themeRepository.findByName(name);
-        if(theme != null) {
-            throw new AlreadyExistsHttpException("Theme already exists");
-        }
-    }
-
-    /**
-     * method for validate if is a hex color
-     * @param color
-     * @return Optional<String>
-     */
-    public void validateIfIsHexColor(String color) throws BadRequestHttpException {
-        boolean isHexValid = Validators.isHexColor(color);
-        if(!isHexValid) {
-            throw new BadRequestHttpException("Color is not a valid hex color");
-        }
+        throw new NotFoundHttpException("Theme");
     }
 }

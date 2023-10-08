@@ -3,6 +3,7 @@ package com.project.app_java.shared.problemDetails;
 import com.project.app_java.shared.exceptions.AlreadyExistsHttpException;
 import com.project.app_java.shared.exceptions.BadRequestHttpException;
 import com.project.app_java.shared.exceptions.InternalServerHttpException;
+import com.project.app_java.shared.exceptions.NotFoundHttpException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,7 +16,7 @@ import java.time.Instant;
 public class HttpProblemDetails extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AlreadyExistsHttpException.class)
     ProblemDetail handleAlreadyExistsHttpException(AlreadyExistsHttpException e) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_ACCEPTABLE, e.getMessage());
         problemDetail.setTitle("Already Exists");
         problemDetail.setDetail(e.getMessage());
         problemDetail.setProperty("cause", e.getCause());
@@ -35,6 +36,15 @@ public class HttpProblemDetails extends ResponseEntityExceptionHandler {
     ProblemDetail handleInternalServerHttpException(InternalServerHttpException e) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         problemDetail.setTitle("Internal Server Error");
+        problemDetail.setDetail(e.getMessage());
+        problemDetail.setProperty("cause", e.getCause());
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+    @ExceptionHandler(NotFoundHttpException.class)
+    ProblemDetail handleNotFoundHttpException(NotFoundHttpException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+        problemDetail.setTitle("Not Found");
         problemDetail.setDetail(e.getMessage());
         problemDetail.setProperty("cause", e.getCause());
         problemDetail.setProperty("timestamp", Instant.now());
