@@ -1,5 +1,6 @@
 package com.project.app_java.themes.controller;
 
+import com.project.app_java.shared.constants.AppConstants;
 import com.project.app_java.shared.exceptions.AlreadyExistsHttpException;
 import com.project.app_java.shared.exceptions.BadRequestHttpException;
 import com.project.app_java.shared.exceptions.InternalServerHttpException;
@@ -51,9 +52,17 @@ public class ThemeController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<List<Theme>> getAllWithoutPaginate() {
-        return ResponseEntity.ok().body(themeService.getAllThemesWithoutPaginate());
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<?> deleteThemeByUuid(@PathVariable String uuid) throws NotFoundHttpException, InternalServerHttpException {
+        try {
+            themeService.deleteThemeByUuid(uuid);
+            return ResponseEntity.ok().body(ResponseEntity.status(202).body("Theme deleted successfully"));
+
+        } catch (NotFoundHttpException e) {
+            throw new NotFoundHttpException(e.getMessage());
+        } catch (Exception e) {
+            throw new InternalServerHttpException(e.getMessage());
+        }
     }
 
     @GetMapping("/{uuid}")
@@ -67,16 +76,13 @@ public class ThemeController {
         }
     }
 
-    @DeleteMapping("/{uuid}")
-    public ResponseEntity<?> deleteThemeByUuid(@PathVariable String uuid) throws NotFoundHttpException, InternalServerHttpException {
-        try {
-            themeService.deleteThemeByUuid(uuid);
-            return ResponseEntity.ok().body(ResponseEntity.status(202).body("Theme deleted successfully"));
-
-        } catch (NotFoundHttpException e) {
-            throw new NotFoundHttpException(e.getMessage());
-        } catch (Exception e) {
-            throw new InternalServerHttpException(e.getMessage());
-        }
+    @GetMapping
+    public ResponseEntity<List<Theme>> getAllThemes(
+            @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+            @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY) String sortBy,
+            @RequestParam(value = "sortDirection", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION) String sortDirection
+    ) {
+        return ResponseEntity.ok().body(themeService.getAllThemes(page, size, sortBy, sortDirection));
     }
 }

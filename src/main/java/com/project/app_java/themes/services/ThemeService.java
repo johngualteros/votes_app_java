@@ -7,6 +7,10 @@ import com.project.app_java.shared.utils.Convertors;
 import com.project.app_java.themes.models.Theme;
 import com.project.app_java.themes.repository.ThemeRepository;
 import com.project.app_java.themes.utils.Validators;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +18,8 @@ import java.util.Optional;
 
 @Service
 public class ThemeService {
-    //TODO: make the responses or es or en depending on the language of the user first using the theme and pagination
+    //TODO: make the responses or es or en depending on the language of the user
+    //TODO: Implement the internazionalization of the app
 
     // repository
     private ThemeRepository themeRepository;
@@ -81,6 +86,25 @@ public class ThemeService {
         Optional<Theme> theme = themeRepository.findByUUID(uuid);
         if(theme.isEmpty()) throw new NotFoundHttpException("Theme");
         themeRepository.delete(theme.get());
+    }
+
+    /**
+     * method for get all themes with paginate
+     * @param page
+     * @param size
+     * @param sortBy
+     * @param sortDirection
+     * @return List<Theme>
+     * */
+    public List<Theme> getAllThemes(int page, int size, String sortBy, String sortDirection) {
+        Sort sort = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() :
+                Sort.by(sortBy).descending();
+        // CREATE A PAGEABLE INSTANCE
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Theme> themes = themeRepository.findAll(pageable);
+        // GET CONTENT OF PAGE
+        List<Theme> themesList = themes.getContent();
+        return themesList;
     }
 }
 
