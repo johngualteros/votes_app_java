@@ -18,9 +18,6 @@ import java.util.Optional;
 
 @Service
 public class ThemeService {
-    //TODO: make the responses or es or en depending on the language of the user
-    //TODO: Implement the internazionalization of the app
-
     // repository
     private ThemeRepository themeRepository;
     // validators

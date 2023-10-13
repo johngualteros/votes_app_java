@@ -1,4 +1,4 @@
-package com.project.app_java.themes.models;
+package com.project.app_java.users.models;
 
 import com.project.app_java.shared.utils.Generators;
 import jakarta.persistence.*;
@@ -12,12 +12,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "theme")
-public class Theme {
-
+@Table(name = "user")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long   id;
+    private Long id;
 
     @Column
     private String uuid = Generators.generateUUID();
@@ -26,15 +25,11 @@ public class Theme {
     private String name;
 
     @Column(nullable = false)
-    private String color;
+    private String email;
 
-    @Override
-    public String toString() {
-        return this.name;
-    }
+    @Column(nullable = false)
+    private String password;
 
-    public Theme(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
+    @Column(nullable = false)
+    private String role;
 }

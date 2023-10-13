@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class Validators {
     private ThemeRepository themeRepository;
-    Validators(ThemeRepository themeRepository) {
+    public Validators(ThemeRepository themeRepository) {
         this.themeRepository = themeRepository;
     }
     /**
